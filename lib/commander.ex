@@ -171,6 +171,7 @@ defmodule Coxir.Commander do
         end
         count = length(rest)
         arity = unquote(arity)
+        |> :erlang.-(1)
 
         # Join as last param
         rest = \
@@ -191,7 +192,7 @@ defmodule Coxir.Commander do
         # Final
         rest = [message | rest]
         cond do
-          length(rest) <= arity ->
+          length(rest) <= arity + 1 ->
             apply(from, name, rest)
           true ->
             :ignore
