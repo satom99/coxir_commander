@@ -119,7 +119,8 @@ defmodule Coxir.Commander do
       [
         @channel == :any or \
         @channel == channel.id,
-        permit?(member, @permit)
+        @permit == :any or \
+        permit?(author, channel, @permit)
       ]
       |> Enum.reduce(&and/2)
       |> case do
