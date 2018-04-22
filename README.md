@@ -34,7 +34,7 @@ defmodule Test do
     Member.kick(member)
   end
 
-  @permit &is_admin?/1
+  @permit &is_admin?/2
   command eval(code) do
     # ···
   end
