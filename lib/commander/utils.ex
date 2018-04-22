@@ -86,7 +86,7 @@ defmodule Coxir.Commander.Utils do
         channel.permission_overwrites
         |> Enum.filter(& &1 in [user.id, guild_id | flakes])
 
-        permissions = writes
+        finale = writes
         |> Enum.reduce(
           permissions,
           fn %{deny: deny, allow: allow}, perms ->
@@ -100,7 +100,7 @@ defmodule Coxir.Commander.Utils do
           bor(permissions, @admin) ->
             @all
           true ->
-            permissions
+            finale
         end
     end
   end
