@@ -152,11 +152,13 @@ defmodule Coxir.Commander do
     |> Enum.map(&to_string/1)
     |> Enum.join(" ")
     |> String.trim_leading
-
-    path = arity
-    |> case do
-      1 -> path
-      _ -> path <> " "
+    
+    path = \
+    cond do
+      arity > 1 ->
+        path <> " "
+      true ->
+        path
     end
 
     quote do
