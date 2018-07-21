@@ -47,14 +47,9 @@ defmodule Coxir.Commander do
     |> List.flatten
 
     handler = quote do
-      unquote(prefix)
-      |> case do
-        "" ->
-          content
-        prefix ->
-          content
-          |> String.trim_leading(prefix)
-      end
+      prefix = unquote(prefix)
+      prefix = content
+      |> String.trim_leading(prefix)
       |> case do
         unquote(clauses)
       end
@@ -78,16 +73,19 @@ defmodule Coxir.Commander do
     body = body
     |> blockify
 
-    {name, func, arity} = \
+    {name, func, arities} = \
     function |> inject(body)
 
     quote do
-      @commands {
-        __MODULE__,
-        unquote(name),
-        @space,
-        unquote(arity)
-      }
+      unquote(arities)
+      |> Enum.map(&
+        @commands {
+          __MODULE__,
+          unquote(name),
+          @space,
+          &1
+        }
+      )
       unquote func
       unquote reset()
     end
@@ -152,13 +150,11 @@ defmodule Coxir.Commander do
     |> Enum.map(&to_string/1)
     |> Enum.join(" ")
     |> String.trim_leading
-    
-    path = \
-    cond do
-      arity > 1 ->
-        path <> " "
-      true ->
-        path
+
+    path = arity
+    |> case do
+      1 -> path
+      _ -> path <> " "
     end
 
     quote do
@@ -186,8 +182,7 @@ defmodule Coxir.Commander do
             last = tail
             |> Enum.join(" ")
 
-            head
-            |> List.insert_at(arity, last)
+            head ++ [last]
           true ->
             rest
         end

@@ -76,11 +76,11 @@ defmodule Coxir.Commander.Helpers do
       | arguments
     ]
     params = [{name, meta, arguments} | rest]
-    arity = length(arguments)
+    arities = aritier(arguments)
     tuple = {:when, meta, params}
     func = {:def, meta, [tuple, body]}
 
-    {name, func, arity}
+    {name, func, arities}
   end
   def inject({name, meta, arguments}, body) do
     arguments = arguments || []
@@ -89,10 +89,27 @@ defmodule Coxir.Commander.Helpers do
       {:message, [], context}
       | arguments
     ]
-    arity = length(arguments)
+    arities = aritier(arguments)
     tuple = {name, meta, arguments}
     func = {:def, meta, [tuple, body]}
 
-    {name, func, arity}
+    {name, func, arities}
+  end
+
+  defp aritier(arguments) do
+    optional = arguments
+    |> Enum.count(
+      fn {name, _meta, _params} ->
+        name == :\\
+      end
+    )
+    maximum = arguments
+    |> length
+
+    minimum = maximum
+    |> :erlang.-(optional)
+
+    minimum..maximum
+    |> Enum.map(& &1)
   end
 end
