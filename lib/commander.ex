@@ -24,7 +24,7 @@ defmodule Coxir.Commander do
     |> Enum.join(" ")
 
     length = prefix
-    |> String.length
+    |> IO.iodata_length
 
     # Handler
     guard = quote do
