@@ -47,9 +47,12 @@ defmodule Coxir.Commander do
     |> List.flatten
 
     handler = quote do
-      prefix = unquote(prefix)
-      prefix = content
-      |> String.trim_leading(prefix)
+      length = unquote(prefix)
+      |> String.length
+
+      content
+      |> String.split_at(length)
+      |> Kernel.elem(1)
       |> case do
         unquote(clauses)
       end
