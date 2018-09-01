@@ -47,13 +47,14 @@ defmodule Coxir.Commander.Utils do
     term.(user, channel)
   end
   def permit?(user, channel, term) do
-    perm = permissions(user, channel)
-    term
+    term = term
     |> List.wrap
     |> Enum.map(& @permissions[&1])
     |> Enum.reduce(&bor/2)
-    |> bor(perm)
-    == perm
+
+    permissions(user, channel)
+    |> band(term)
+    == term
   end
   def permit?(member, term) do
     general = Channel.get(member.guild_id)
@@ -78,6 +79,7 @@ defmodule Coxir.Commander.Utils do
       true ->
         permissions = \
         [everyone | member.roles]
+        |> Enum.sort_by(& &1[:position])
         |> Enum.map(& &1[:permissions])
         |> Enum.reduce(&bor/2)
 
@@ -85,7 +87,7 @@ defmodule Coxir.Commander.Utils do
 
         writes = \
         channel.permission_overwrites
-        |> Enum.filter(& &1 in [user.id, guild_id | flakes])
+        |> Enum.filter(& &1[:id] in [user.id, guild_id | flakes])
 
         finale = writes
         |> Enum.reduce(
@@ -98,7 +100,7 @@ defmodule Coxir.Commander.Utils do
         )
 
         cond do
-          bor(permissions, @admin) ->
+          band(permissions, @admin) == @admin ->
             @all
           true ->
             finale

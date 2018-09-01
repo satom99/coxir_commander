@@ -25,12 +25,11 @@ defmodule Coxir.Commander.Helpers do
 
       # Nesting
       defmacro __using__(_opts) do
-        module = __MODULE__
         quote do
-          @commands unquote(module)
+          @commands unquote(__MODULE__)
           |> Coxir.Commander.Helpers.commands
 
-          @prefix unquote(module)
+          @prefix unquote(__MODULE__)
           |> Coxir.Commander.Helpers.prefix
         end
       end
