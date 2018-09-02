@@ -86,6 +86,7 @@ defmodule Coxir.Commander do
           __MODULE__,
           unquote(name),
           @space,
+          @description,
           &1
         }
       )
@@ -140,7 +141,7 @@ defmodule Coxir.Commander do
     [do: block]
   end
 
-  defp clause({from, name, space, arity}) do
+  defp clause({from, name, space, _description, arity}) do
     # Path
     path = space
     |> case do

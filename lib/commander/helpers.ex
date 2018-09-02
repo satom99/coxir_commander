@@ -5,6 +5,7 @@ defmodule Coxir.Commander.Helpers do
       @space :""
       @permit :any
       @channel :any
+      @description :""
     end
   end
 
