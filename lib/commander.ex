@@ -23,6 +23,18 @@ defmodule Coxir.Commander do
     |> List.wrap
     |> Enum.join(" ")
 
+    default_clause = module
+    |> Module.get_attribute(:default_clause)
+    |> case do
+      %Macro.Env{module: module} ->
+        quote do
+          unquote(module).default_clause(message)
+        end
+
+      _ ->
+        nil
+    end
+
     length = prefix
     |> IO.iodata_length
 
@@ -40,7 +52,6 @@ defmodule Coxir.Commander do
     default = quote do
       _other -> :ignore
     end
-
     clauses = commands
     |> Enum.map(&clause/1)
     |> Kernel.++([default])
@@ -65,6 +76,9 @@ defmodule Coxir.Commander do
         case event do
           unquote(tuple) when unquote(guard) ->
             unquote(handler)
+          unquote(tuple) ->
+            unquote(default_clause)
+            {:ok, state}
           _other ->
             {:ok, state}
         end
@@ -91,6 +105,27 @@ defmodule Coxir.Commander do
       )
       unquote func
       unquote reset()
+    end
+  end
+
+  defmacro default_clause body do
+    body = body
+    |> blockify
+
+    __CALLER__.module
+    |> Module.get_attribute(:default_clause)
+    |> case do
+      nil ->
+        __CALLER__.module
+        |> Module.put_attribute(:default_clause, __CALLER__)
+
+        quote do
+          def default_clause(var!(message)), unquote(body)
+        end
+
+      val ->
+        "You can only have one default clause"
+        |> raise
     end
   end
 

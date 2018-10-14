@@ -21,6 +21,12 @@ defmodule Coxir.Commander.Helpers do
         accumulate: true,
         persist: true
       )
+      __MODULE__
+      |> Module.register_attribute(:default_clause,
+        accumulate: false,
+        persist: true
+      )
+
       @before_compile Coxir.Commander
 
       # Nesting
