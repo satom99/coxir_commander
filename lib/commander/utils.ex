@@ -74,7 +74,7 @@ defmodule Coxir.Commander.Utils do
     cond do
       is_nil(guild) ->
         1
-      guild.owner == user.id ->
+      guild.owner_id == user.id ->
         @all
       true ->
         permissions = \
